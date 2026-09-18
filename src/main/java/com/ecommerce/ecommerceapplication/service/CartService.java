@@ -3,6 +3,7 @@ package com.ecommerce.ecommerceapplication.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ecommerce.ecommerceapplication.entity.Cart;
 import com.ecommerce.ecommerceapplication.entity.CartItem;
@@ -33,7 +34,12 @@ public class CartService {
                 });
     }
 
+    @Transactional
     public void addItemToCart(User user, Long productId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
         Cart cart = getOrCreateCart(user);
         Product product = productService.getProductById(productId);
 
@@ -41,17 +47,59 @@ public class CartService {
 
         for (CartItem item : existingItems) {
             if (item.getProduct().getId().equals(productId)) {
-                item.setQuantity(item.getQuantity() + quantity);
+                int updatedQuantity = item.getQuantity() + quantity;
+                validateStock(product, updatedQuantity);
+                item.setQuantity(updatedQuantity);
                 cartItemRepository.save(item);
                 return;
             }
         }
 
+        validateStock(product, quantity);
         CartItem newItem = new CartItem();
         newItem.setCart(cart);
         newItem.setProduct(product);
         newItem.setQuantity(quantity);
         cartItemRepository.save(newItem);
+    }
+
+    public List<CartItem> getCartItems(User user) {
+        Cart cart = getOrCreateCart(user);
+        return cartItemRepository.findByCartId(cart.getId());
+    }
+
+    @Transactional
+    public void updateItemQuantity(User user, Long cartItemId, int quantity) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
+        CartItem cartItem = getCartItemForUser(user, cartItemId);
+        validateStock(cartItem.getProduct(), quantity);
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+    }
+
+    @Transactional
+    public void removeItemFromCart(User user, Long cartItemId) {
+        cartItemRepository.delete(getCartItemForUser(user, cartItemId));
+    }
+
+    private CartItem getCartItemForUser(User user, Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found with id: " + cartItemId));
+
+        if (!cartItem.getCart().getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Cart item does not belong to this user");
+        }
+
+        return cartItem;
+    }
+
+    private void validateStock(Product product, int quantity) {
+        if (product.getStockQuantity() < quantity) {
+            throw new IllegalArgumentException("Insufficient stock for product: " + product.getName());
+        }
     }
 
 }
