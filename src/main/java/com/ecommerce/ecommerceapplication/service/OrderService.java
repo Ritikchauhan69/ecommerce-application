@@ -82,8 +82,22 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
     }
 
+    public Order getOrderForUser(Long userId, Long orderId) {
+        Order order = getOrderById(orderId);
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Order does not belong to this user");
+        }
+
+        return order;
+    }
+
     public List<Order> getOrdersByUser(Long userId) {
         return orderRepository.findByUserId(userId);
+    }
+
+    public List<OrderItem> getOrderItems(Long orderId) {
+        return orderItemRepository.findByOrderId(orderId);
     }
 
 }

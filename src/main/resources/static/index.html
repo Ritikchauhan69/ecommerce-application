@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartly | Simple shopping</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#catalog"><span>◉</span> Cartly</a>
+    <nav><a href="#catalog">Shop</a><a href="#orders">Orders</a><a href="#setup">Store setup</a></nav>
+    <button class="cart-button" id="cart-button" type="button">Cart <span id="cart-count">0</span></button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">A SIMPLE SPRING BOOT STORE</p>
+      <h1>Everything you need,<br><em>without the clutter.</em></h1>
+      <p>Browse a focused catalog, build your cart, and place an order from one simple page.</p>
+      <a class="primary-button" href="#catalog">Browse products</a>
+    </section>
+
+    <section class="account-panel" id="account">
+      <div>
+        <p class="eyebrow">SHOPPER</p>
+        <h2 id="account-title">Choose a shopper to begin</h2>
+        <p id="account-message">Register a new account or enter an existing user ID.</p>
+      </div>
+      <div class="account-actions">
+        <form id="select-user-form" class="inline-form">
+          <label for="user-id">User ID</label>
+          <input id="user-id" type="number" min="1" placeholder="e.g. 1" required>
+          <button type="submit" class="secondary-button">Use account</button>
+        </form>
+        <button id="show-register" type="button" class="text-button">Create an account</button>
+      </div>
+    </section>
+
+    <dialog id="register-dialog">
+      <form id="register-form" class="dialog-form">
+        <div class="dialog-heading"><h2>Create account</h2><button type="button" class="icon-button" data-close-dialog>×</button></div>
+        <label>Name<input name="name" required></label>
+        <label>Email<input name="email" type="email" required></label>
+        <label>Password<input name="password" type="password" minlength="8" required></label>
+        <button class="primary-button" type="submit">Create account</button>
+      </form>
+    </dialog>
+
+    <section class="catalog-section" id="catalog">
+      <div class="section-heading"><div><p class="eyebrow">CATALOG</p><h2>Find your next favorite</h2></div><input id="product-search" class="search" placeholder="Search products" aria-label="Search products"></div>
+      <div id="product-grid" class="product-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="orders-section" id="orders">
+      <div class="section-heading"><div><p class="eyebrow">YOUR PURCHASES</p><h2>Order history</h2></div><button id="refresh-orders" type="button" class="secondary-button">Refresh orders</button></div>
+      <div id="order-list" class="order-list"><p class="muted">Choose a shopper to see orders.</p></div>
+    </section>
+
+    <section class="setup-section" id="setup">
+      <p class="eyebrow">DEMO STORE MANAGEMENT</p>
+      <h2>Add catalog data</h2>
+      <p>Use this area to add categories and products while building your local project.</p>
+      <div class="setup-grid">
+        <form id="category-form" class="card-form"><h3>New category</h3><label>Name<input name="name" required placeholder="Electronics"></label><button class="secondary-button" type="submit">Add category</button></form>
+        <form id="product-form" class="card-form"><h3>New product</h3><label>Name<input name="name" required></label><label>Description<textarea name="description" rows="2"></textarea></label><div class="split-fields"><label>Price<input name="price" type="number" min="0.01" step="0.01" required></label><label>Stock<input name="stockQuantity" type="number" min="0" required></label></div><label>Category<select name="categoryId" id="product-category" required></select></label><button class="secondary-button" type="submit">Add product</button></form>
+      </div>
+    </section>
+  </main>
+
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+    <div class="drawer-heading"><div><p class="eyebrow">YOUR CART</p><h2>Ready when you are</h2></div><button id="close-cart" class="icon-button" type="button">×</button></div>
+    <div id="cart-items" class="cart-items"><p class="muted">Choose a shopper to use the cart.</p></div>
+    <div class="cart-footer"><div class="cart-total"><span>Total</span><strong id="cart-total">₹0.00</strong></div><button id="checkout-button" type="button" class="primary-button" disabled>Checkout</button></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -3,6 +3,7 @@ package com.ecommerce.ecommerceapplication.service;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.ecommerce.ecommerceapplication.entity.Role;
 import com.ecommerce.ecommerceapplication.entity.User;
@@ -12,9 +13,11 @@ import com.ecommerce.ecommerceapplication.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(String name, String email, String password) {
@@ -25,7 +28,7 @@ public class UserService {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setRoles(Set.of(Role.CUSTOMER));
 
         return userRepository.save(user);

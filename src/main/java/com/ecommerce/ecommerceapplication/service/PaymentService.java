@@ -20,11 +20,15 @@ public class PaymentService {
     }
 
     public Payment recordPayment(Order order, BigDecimal amount, PaymentMethod method) {
+        if (paymentRepository.findByOrderId(order.getId()).isPresent()) {
+            throw new IllegalArgumentException("Payment already exists for order id: " + order.getId());
+        }
+
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setAmount(amount);
         payment.setPaymentMethod(method);
-        payment.setPaymentStatus(PaymentStatus.SUCCESS);
+        payment.setPaymentStatus(method == PaymentMethod.COD ? PaymentStatus.PENDING : PaymentStatus.SUCCESS);
         return paymentRepository.save(payment);
     }
 
